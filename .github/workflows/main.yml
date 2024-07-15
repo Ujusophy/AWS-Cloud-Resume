@@ -24,8 +24,8 @@ jobs:
 
       - name: Install AWS CLI
         run: |
-          sudo apt-get update
-          sudo apt-get install awscli -y
+          apt-get install awscli -y
+          aws --version
       
       - name: Create CloudFront Invalidation
         run: |

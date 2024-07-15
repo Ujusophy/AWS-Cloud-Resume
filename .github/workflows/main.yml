@@ -1,4 +1,4 @@
-name: Upload Website
+name: Upload Website and Invalidate Cache
 
 on:
   workflow_dispatch:
@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
       - name: Upload to S3
         uses: jakejarvis/s3-sync-action@master
         with:
@@ -24,9 +25,11 @@ jobs:
 
       - name: Install AWS CLI
         run: |
-          apt-get install awscli -y
-          aws --version
-      
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip
+          ./aws/install
+
       - name: Create CloudFront Invalidation
         run: |
-          aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+          aws cloudfront create-invalidation --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*" || exit 0
+        continue-on-error: true
